@@ -1,0 +1,20 @@
+version: '3.3'
+
+#services describe the containers that will start
+services:
+  # api is the container name for our Go API
+  api:
+    build:
+      context: ./
+      dockerfile: dockerConfig/test.dockerfile
+    # If the container goes down, it will restart
+    restart: "always"
+    # Connects the API to a common api.network bridge
+    networks:
+      - "api.network"
+    volumes:
+      - './tmp:/app/tmp'
+    command:  go test -v ./Test -coverprofile cover.out
+
+networks:
+  api.network:

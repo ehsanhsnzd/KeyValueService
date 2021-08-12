@@ -1,0 +1,32 @@
+version: '3.3'
+
+#services describe the containers that will start
+services:
+  # api is the container name for our Go API
+  api:
+    build:
+      context: ./
+      dockerfile: dockerConfig/app.dockerfile
+    # If the container goes down, it will restart
+    restart: "always"
+    # Connects the API to a common api.network bridge
+    networks:
+      - "api.network"
+    volumes:
+      - './tmp:/app/tmp'
+
+  # nginx container
+  nginx:
+    # specifies the latest nginx image
+    image: nginx:latest
+    # Connects the conf file of the container to the conf file in our folder
+    volumes:
+      - ./dockerConfig/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api
+    ports:
+      - "9001:80"
+    networks:
+      - "api.network"
+networks:
+  api.network:
